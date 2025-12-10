@@ -1,0 +1,27 @@
+opam-version: "2.0"
+maintainer: "Hannes Mehnert <hannes@mehnert.org>"
+authors: "Hannes Mehnert <hannes@mehnert.org>"
+license: "ISC"
+homepage: "https://github.com/hannesm/purl"
+doc: "https://hannesm.github.io/purl/doc"
+bug-reports: "https://github.com/hannesm/purl/issues"
+depends: [
+  "ocaml" {>= "4.08.0"}
+  "dune" {>= "1.0"}
+  "alcotest" {with-test}
+  "jsont" {with-test}
+  "bytesrw" {with-test}
+]
+build: [
+  ["dune" "subst"] {dev}
+  ["dune" "build" "-p" name "-j" jobs]
+  ["dune" "runtest" "-p" name "-j" jobs] {with-test}
+]
+dev-repo: "git+https://github.com/hannesm/purl.git"
+synopsis: "Package URLs"
+description: """
+Encoder and decoder for package URL (https://github.com/package-url/purl-spec)
+in OCaml. This does not have any dependencies (but uses jsont and bytesrw
+together with alcotest for testing).
+"""
+x-maintenance-intent: [ "(latest)" ]

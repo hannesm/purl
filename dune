@@ -1,0 +1,10 @@
+(library
+  (name purl)
+  (public_name purl)
+  (modules purl))
+
+(test
+  (name tests)
+  (modules tests)
+  (libraries jsont alcotest purl jsont.bytesrw)
+  (deps (source_tree data)))
