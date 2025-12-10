@@ -6,11 +6,11 @@ homepage: "https://github.com/hannesm/purl"
 doc: "https://hannesm.github.io/purl/doc"
 bug-reports: "https://github.com/hannesm/purl/issues"
 depends: [
-  "ocaml" {>= "4.08.0"}
+  "ocaml" {>= "4.14.0"}
   "dune" {>= "1.0"}
-  "alcotest" {with-test}
-  "jsont" {with-test}
-  "bytesrw" {with-test}
+  "alcotest" {with-test & >= "1.9.1"}
+  "jsont" {with-test & >= "0.2.0"}
+  "bytesrw" {with-test & >= "0.3.0"}
 ]
 build: [
   ["dune" "subst"] {dev}
