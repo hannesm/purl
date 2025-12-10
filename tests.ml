@@ -1,4 +1,3 @@
-
 let purl_t =
   let module M = struct
     type t = Purl.t
@@ -13,52 +12,54 @@ let test_one str canonical exp () =
     Alcotest.(check string "building example from README" str
                 (Purl.to_string exp))
 
+let make_exn typ ?namespace name ?version ?qualifiers ?subpath () =
+  Result.get_ok (Purl.make typ ?namespace name ?version ?qualifiers ?subpath ())
+
 let readme_tests =
   (* from https://github.com/package-url/purl-spec README.md at 0c3bc11 *)
   List.map (fun (str, canonical, exp) ->
       str, `Quick, test_one str canonical exp)
     [
       ("pkg:bitbucket/birkenfeld/pygments-main@244fd47e07d1014f0aed9c", true,
-       Purl.v_exn "bitbucket" ["birkenfeld"] "pygments-main"
-         (Some "244fd47e07d1014f0aed9c") [] []);
+       make_exn "bitbucket" ~namespace:"birkenfeld" "pygments-main"
+         ~version:"244fd47e07d1014f0aed9c" ());
       ("pkg:deb/debian/curl@7.50.3-1?arch=i386&distro=jessie", true,
-       Purl.v_exn "deb" ["debian"] "curl" (Some "7.50.3-1")
-         [("arch", "i386"); ("distro", "jessie")] []);
+       make_exn "deb" ~namespace:"debian" "curl" ~version:"7.50.3-1"
+         ~qualifiers:"arch=i386&distro=jessie" ());
       ("pkg:docker/cassandra@sha256:244fd47e07d1004f0aed9c", true,
-       Purl.v_exn "docker" [] "cassandra" (Some "sha256:244fd47e07d1004f0aed9c")
-         [] []);
+       make_exn "docker" "cassandra" ~version:"sha256:244fd47e07d1004f0aed9c" ());
       ("pkg:docker/customer/dockerimage@sha256:244fd47e07d1004f0aed9c?repository_url=gcr.io", true,
-       Purl.v_exn "docker" ["customer"] "dockerimage" (Some "sha256:244fd47e07d1004f0aed9c")
-         [("repository_url", "gcr.io")] []);
+       make_exn "docker" ~namespace:"customer" "dockerimage" ~version:"sha256:244fd47e07d1004f0aed9c"
+         ~qualifiers:"repository_url=gcr.io" ());
       ("pkg:gem/jruby-launcher@1.1.2?platform=java", true,
-       Purl.v_exn "gem" [] "jruby-launcher" (Some "1.1.2")
-         [("platform", "java")] []);
+       make_exn "gem" "jruby-launcher" ~version:"1.1.2"
+         ~qualifiers:"platform=java" ());
       ("pkg:gem/ruby-advisory-db-check@0.12.4", true,
-       Purl.v_exn "gem" [] "ruby-advisory-db-check" (Some "0.12.4") [] []);
+       make_exn "gem" "ruby-advisory-db-check" ~version:"0.12.4" ());
       ("pkg:github/package-url/purl-spec@244fd47e07d1004f0aed9c", true,
-       Purl.v_exn "github" ["package-url"] "purl-spec" (Some "244fd47e07d1004f0aed9c") [] []);
+       make_exn "github" ~namespace:"package-url" "purl-spec" ~version:"244fd47e07d1004f0aed9c" ());
       ("pkg:golang/google.golang.org/genproto#googleapis/api/annotations", true,
-       Purl.v_exn "golang" ["google.golang.org"] "genproto" None [] ["googleapis"; "api"; "annotations"]);
+       make_exn "golang" ~namespace:"google.golang.org" "genproto" ~subpath:"googleapis/api/annotations" ());
       ("pkg:maven/org.apache.xmlgraphics/batik-anim@1.9.1?packaging=sources", true,
-       Purl.v_exn "maven" ["org.apache.xmlgraphics"] "batik-anim" (Some "1.9.1")
-         [("packaging", "sources")] []);
+       make_exn "maven" ~namespace:"org.apache.xmlgraphics" "batik-anim" ~version:"1.9.1"
+         ~qualifiers:"packaging=sources" ());
       ("pkg:maven/org.apache.xmlgraphics/batik-anim@1.9.1?repository_url=repo.spring.io/release", false (* repository_url not percent-encoded *),
-        Purl.v_exn "maven" ["org.apache.xmlgraphics"] "batik-anim" (Some "1.9.1")
-          [("repository_url", "repo.spring.io/release")] []);
+        make_exn "maven" ~namespace:"org.apache.xmlgraphics" "batik-anim" ~version:"1.9.1"
+          ~qualifiers:"repository_url=repo.spring.io/release" ());
       ("pkg:npm/%40angular/animation@12.3.1", true,
-       Purl.v_exn "npm" ["@angular"] "animation" (Some "12.3.1") [] []);
+       make_exn "npm" ~namespace:"@angular" "animation" ~version:"12.3.1" ());
       ("pkg:npm/foobar@12.3.1", true,
-       Purl.v_exn "npm" [] "foobar" (Some "12.3.1") [] []);
+       make_exn "npm" "foobar" ~version:"12.3.1" ());
       ("pkg:nuget/EnterpriseLibrary.Common@6.0.1304", true,
-       Purl.v_exn "nuget" [] "EnterpriseLibrary.Common" (Some "6.0.1304") [] []);
+       make_exn "nuget" "EnterpriseLibrary.Common" ~version:"6.0.1304" ());
       ("pkg:pypi/django@1.11.1", true,
-       Purl.v_exn "pypi" [] "django" (Some "1.11.1") [] []);
+       make_exn "pypi" "django" ~version:"1.11.1" ());
       ("pkg:rpm/fedora/curl@7.50.3-1.fc25?arch=i386&distro=fedora-25", true,
-       Purl.v_exn "rpm" ["fedora"] "curl" (Some "7.50.3-1.fc25")
-         [("arch", "i386"); ("distro", "fedora-25")] []);
+       make_exn "rpm" ~namespace:"fedora" "curl" ~version:"7.50.3-1.fc25"
+         ~qualifiers:"arch=i386&distro=fedora-25" ());
       ("pkg:rpm/opensuse/curl@7.56.1-1.1.?arch=i386&distro=opensuse-tumbleweed", true,
-         Purl.v_exn "rpm" ["opensuse"] "curl" (Some "7.56.1-1.1.")
-         [("arch", "i386"); ("distro", "opensuse-tumbleweed")] []);
+         make_exn "rpm" ~namespace:"opensuse" "curl" ~version:"7.56.1-1.1."
+           ~qualifiers:"arch=i386&distro=opensuse-tumbleweed" ());
     ]
 
 module String_map = Map.Make (String)
